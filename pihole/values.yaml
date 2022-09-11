@@ -1,0 +1,10 @@
+#@data/values
+---
+name: "pihole"
+namespace: "pihole"
+webpassword: ""
+
+upstream_dns: "1.1.1.2"
+server_ip: ""
+
+hostpath: ""

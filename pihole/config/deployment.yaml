@@ -1,0 +1,94 @@
+#@ load("@ytt:data", "data")
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: #@ data.values.name
+  name: #@ data.values.name
+  namespace: #@ data.values.namespace
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: #@ data.values.name
+  template:
+    metadata:
+      labels:
+        app: #@ data.values.name
+    spec:
+      containers:
+        - env:
+            - name: TZ
+              value: America/New_York
+            - name: WEBPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: password
+                  name: pihole-webpassword
+            - name: PIHOLE_DNS_
+              value: #@ data.values.upstream_dns
+              #@ if data.values.server_ip != "":
+            - name: FTLCONF_REPLY_ADDR4
+              value: #@ data.values.server_ip
+              #@ end
+          image: pihole/pihole:latest
+          imagePullPolicy: IfNotPresent
+          name: pihole
+          ports:
+            - name: dns-tcp
+              containerPort: 53
+              protocol: TCP
+            - name: dns-udp
+              containerPort: 53
+              protocol: UDP
+            - name: web
+              containerPort: 80
+              protocol: TCP
+            - name: web-https
+              containerPort: 443
+              protocol: TCP
+            - name: client-udp
+              containerPort: 67
+              protocol: UDP
+          volumeMounts:
+            - name: etc-pihole
+              mountPath: /etc/pihole
+            - name: etc-dnsmasq
+              mountPath: /etc/dnsmasq.d
+            - name: whitelist
+              mountPath: /etc/pihole/whitelist.txt
+              subPath: whitelist.txt
+            - name: adlists
+              mountPath: /etc/pihole/adlists.list
+              subPath: adlists.list
+      restartPolicy: Always
+      volumes:
+        - name: etc-pihole
+          #@ if data.values.hostpath:
+          hostPath:
+            path: #@ data.values.hostpath + "/etc"
+          #@ else:
+          emptyDir:
+            medium: Memory
+          #@ end
+        - name: etc-dnsmasq
+          #@ if data.values.hostpath:
+          hostPath:
+            path: #@ data.values.hostpath + "/dnsmasq.d"
+          #@ else:
+          emptyDir:
+            medium: Memory
+        #@ end
+        - name: whitelist
+          configMap:
+            name: whitelist.txt
+            items:
+              - key: whitelist.txt
+                path: whitelist.txt
+        - name: adlists
+          configMap:
+            name: adlists.list
+            items:
+              - key: adlists.list
+                path: adlists.list

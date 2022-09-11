@@ -1,0 +1,36 @@
+#@ load("@ytt:data", "data")
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: scrypted
+  namespace: #@ data.values.namespace
+  labels:
+    app: scrypted
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: scrypted
+  template:
+    metadata:
+      labels:
+        app: scrypted
+      name: scrypted
+    spec:
+      containers:
+        - args:
+            - /bin/sh
+            - -c
+            - npm exec scrypted-serve
+          image: docker.io/koush/scrypted:latest
+          imagePullPolicy: IfNotPresent
+          name: scrypted
+          volumeMounts:
+            - mountPath: /server/volume
+              name: scrypted-volume
+      hostNetwork: true
+      volumes:
+        - hostPath:
+            path: #@ data.values.hostpath
+          name: scrypted-volume

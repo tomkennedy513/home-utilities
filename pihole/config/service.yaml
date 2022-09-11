@@ -1,0 +1,64 @@
+#@ load("@ytt:data", "data")
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: #@ "{}-udp".format(data.values.name)
+  labels:
+    app: #@ "{}-tcp".format(data.values.name)
+  namespace: #@ data.values.namespace
+  annotations:
+    metallb.universe.tf/allow-shared-ip: #@ "{}-dns".format(data.values.name)
+    #@ if/end data.values.server_ip != "":
+    metallb.universe.tf/loadBalancerIPs: #@ data.values.server_ip
+spec:
+  selector:
+    app: #@ data.values.name
+  ports:
+    - protocol: UDP
+      port: 53
+      name: dns-udp
+      targetPort: dns-udp
+    - name: client-udp
+      port: 67
+      protocol: UDP
+      targetPort: client-udp
+  type: LoadBalancer
+  #@ if/end data.values.server_ip != "":
+  loadBalancerIP: #@ data.values.server_ip
+  sessionAffinity: None
+  externalTrafficPolicy: Local
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: #@ "{}-tcp".format(data.values.name)
+  labels:
+    app: #@ data.values.name
+  namespace: #@ data.values.namespace
+  annotations:
+    metallb.universe.tf/allow-shared-ip:  #@ "{}-dns".format(data.values.name)
+    #@ if/end data.values.server_ip != "":
+    metallb.universe.tf/loadBalancerIPs: #@ data.values.server_ip
+spec:
+  selector:
+    app: #@ data.values.name
+  ports:
+    - protocol: TCP
+      port: 53
+      name: dns-tcp
+      targetPort: dns-tcp
+    - protocol: TCP
+      port: 80
+      name: web
+      targetPort: web
+    - protocol: TCP
+      port: 443
+      name: web-https
+      targetPort: web-https
+  type: LoadBalancer
+  #@ if/end data.values.server_ip != "":
+  loadBalancerIP: #@ data.values.server_ip
+  sessionAffinity: None
+  externalTrafficPolicy: Local
