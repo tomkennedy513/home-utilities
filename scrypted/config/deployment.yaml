@@ -12,6 +12,8 @@ spec:
   selector:
     matchLabels:
       app: scrypted
+  strategy:
+    type: Recreate
   template:
     metadata:
       labels:
@@ -24,7 +26,7 @@ spec:
             - -c
             - npm exec scrypted-serve
           image: docker.io/koush/scrypted:latest
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           name: scrypted
           volumeMounts:
             - mountPath: /server/volume

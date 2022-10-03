@@ -33,7 +33,7 @@ spec:
               value: #@ data.values.server_ip
               #@ end
           image: pihole/pihole:latest
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           name: pihole
           ports:
             - name: dns-tcp
