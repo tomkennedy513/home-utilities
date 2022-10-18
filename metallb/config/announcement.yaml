@@ -1,0 +1,11 @@
+#@ load("@ytt:data", "data")
+
+---
+apiVersion: metallb.io/v1beta1
+kind: L2Advertisement
+metadata:
+  name: #@ data.values.name
+  namespace: #@ data.values.namespace
+spec:
+  ipAddressPools:
+    - #@ data.values.name

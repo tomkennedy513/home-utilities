@@ -1,0 +1,12 @@
+#@ load("@ytt:data", "data")
+
+---
+apiVersion: metallb.io/v1beta1
+kind: IPAddressPool
+metadata:
+  name: #@ data.values.name
+  namespace: #@ data.values.namespace
+spec:
+  autoAssign: #@ data.values.auto_assign
+  addresses:
+    - #@ data.values.address_pool

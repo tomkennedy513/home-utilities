@@ -5,6 +5,8 @@ namespace: "pihole"
 webpassword: ""
 
 upstream_dns: "1.1.1.2"
-server_ip: ""
-
 hostpath: ""
+
+metallb_address_pool: ""
+server_ip: ""
+load_balancer_ips: ""

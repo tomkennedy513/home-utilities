@@ -10,8 +10,10 @@ metadata:
   namespace: #@ data.values.namespace
   annotations:
     metallb.universe.tf/allow-shared-ip: #@ "{}-dns".format(data.values.name)
-    #@ if/end data.values.server_ip != "":
-    metallb.universe.tf/loadBalancerIPs: #@ data.values.server_ip
+    #@ if/end data.values.metallb_address_pool != "":
+    metallb.universe.tf/address-pool: #@ data.values.metallb_address_pool
+    #@ if/end data.values.load_balancer_ips != "":
+    metallb.universe.tf/loadBalancerIPs: #@ data.values.load_balancer_ips
 spec:
   selector:
     app: #@ data.values.name
@@ -39,8 +41,10 @@ metadata:
   namespace: #@ data.values.namespace
   annotations:
     metallb.universe.tf/allow-shared-ip:  #@ "{}-dns".format(data.values.name)
-    #@ if/end data.values.server_ip != "":
-    metallb.universe.tf/loadBalancerIPs: #@ data.values.server_ip
+    #@ if/end data.values.load_balancer_ips != "":
+    metallb.universe.tf/loadBalancerIPs: #@ data.values.load_balancer_ips
+    #@ if/end data.values.metallb_address_pool != "":
+    metallb.universe.tf/address-pool: #@ data.values.metallb_address_pool
 spec:
   selector:
     app: #@ data.values.name

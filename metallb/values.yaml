@@ -1,0 +1,7 @@
+#@data/values
+
+---
+name: ""
+namespace: metallb-system
+address_pool: ""
+auto_assign: true
