@@ -1,8 +1,0 @@
-#@ load("@ytt:data", "data")
----
-apiVersion: v1
-kind: Namespace
-metadata:
-  labels:
-    app: home-assistant
-  name: #@ data.values.namespace

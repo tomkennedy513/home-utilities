@@ -1,9 +1,0 @@
-#@data/values
----
-name: mosquitto
-namespace: mosquitto
-hostpath: ""
-
-metallb_address_pool: ""
-server_ip: ""
-load_balancer_ips: ""
