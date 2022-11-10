@@ -1,0 +1,50 @@
+#@ load("@ytt:data", "data")
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: #@ "{}-deployment".format(data.values.name)
+  namespace: #@ data.values.namespace
+  labels:
+    app:  #@ data.values.name
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app:  #@ data.values.name
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app:  #@ data.values.name
+      name:  #@ "{}-pod".format(data.values.name)
+    spec:
+      serviceAccountName: #@ "{}-sa".format(data.values.name)
+      containers:
+      - name: broker
+        image: eclipse-mosquitto:latest
+        imagePullPolicy: Always
+        ports:
+        - name: default
+          containerPort: 1883
+          protocol: TCP
+        - name: websocket
+          containerPort: 9001
+          protocol: TCP
+        livenessProbe:
+          tcpSocket:
+            port: default
+        readinessProbe:
+          tcpSocket:
+            port: default
+        volumeMounts:
+          - name: #@ "{}-conf".format(data.values.name)
+            mountPath: /mosquitto/config
+      volumes:
+        - name: #@ "{}-conf".format(data.values.name)
+          configMap:
+            name: #@ "{}-conf".format(data.values.name)
+        - name: #@ "{}-pw".format(data.values.name)
+          secret:
+            secretName: #@ "{}-pw".format(data.values.name)
