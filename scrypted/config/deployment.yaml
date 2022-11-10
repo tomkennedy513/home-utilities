@@ -3,22 +3,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: scrypted
+  name: #@ "{}-deployment".format(data.values.name)
   namespace: #@ data.values.namespace
   labels:
-    app: scrypted
+    app: #@ data.values.name
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: scrypted
+      app: #@ data.values.name
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-        app: scrypted
-      name: scrypted
+        app: #@ data.values.name
+      name: #@ "{}-pod".format(data.values.name)
     spec:
       containers:
         - args:
