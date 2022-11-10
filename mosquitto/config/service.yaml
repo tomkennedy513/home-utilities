@@ -1,0 +1,29 @@
+#@ load("@ytt:data", "data")
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: #@ "{}-service".format(data.values.name)
+  labels:
+    app: #@ data.values.name
+  namespace: #@ data.values.namespace
+  annotations:
+    metallb.universe.tf/allow-shared-ip:  #@ "{}-service".format(data.values.name)
+    #@ if/end data.values.load_balancer_ips != "":
+    metallb.universe.tf/loadBalancerIPs: #@ data.values.load_balancer_ips
+    #@ if/end data.values.metallb_address_pool != "":
+    metallb.universe.tf/address-pool: #@ data.values.metallb_address_pool
+spec:
+  selector:
+    app: #@ data.values.name
+  ports:
+    - protocol: TCP
+      port: 1883
+      name: mqtt
+      targetPort: mqtt
+  type: LoadBalancer
+  #@ if/end data.values.server_ip != "":
+  loadBalancerIP: #@ data.values.server_ip
+  sessionAffinity: None
+  externalTrafficPolicy: Local

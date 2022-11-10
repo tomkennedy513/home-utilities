@@ -1,0 +1,38 @@
+#@ load("@ytt:data", "data")
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: #@ "{}-deployment".format(data.values.name)
+  namespace: #@ data.values.namespace
+  labels:
+    app:  #@ data.values.name
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app:  #@ data.values.name
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app:  #@ data.values.name
+      name:  #@ "{}-pod".format(data.values.name)
+    spec:
+      containers:
+        - args:
+            - /bin/sh
+            - -c
+            - npm exec scrypted-serve
+          image: docker.io/koush/scrypted:latest
+          imagePullPolicy: Always
+          name: broker
+          volumeMounts:
+            - mountPath: /server/volume
+              name: scrypted-volume
+      hostNetwork: true
+      volumes:
+        - hostPath:
+            path: #@ data.values.hostpath
+          name: scrypted-volume

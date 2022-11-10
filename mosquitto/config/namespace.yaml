@@ -1,0 +1,9 @@
+#@ load("@ytt:data", "data")
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    app: #@ data.values.name
+  name: #@ data.values.name
+  namespace: #@ data.values.namespace
